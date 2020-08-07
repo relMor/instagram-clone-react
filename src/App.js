@@ -3,11 +3,12 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import TextField from "@material-ui/core/TextField";
+import { Button } from "@material-ui/core";
 
 import "./App.css";
 import Post from "./components/Post/Post";
 import { db, auth } from "./firebase";
-import { Button } from "@material-ui/core";
+import ImageUpload from "./ImageUpload";
 
 function getModalStyle() {
   const top = 50;
@@ -47,7 +48,7 @@ function App() {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         //user is logged in...
-        console.log(authUser);
+        //console.log(authUser);
         setUser(authUser);
       } else {
         setUser(null);
@@ -61,14 +62,16 @@ function App() {
   }, [user, username]);
 
   useEffect(() => {
-    db.collection("posts").onSnapshot((snapshot) => {
-      setPosts(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          post: doc.data(),
-        }))
-      );
-    });
+    db.collection("posts")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setPosts(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            post: doc.data(),
+          }))
+        );
+      });
   }, []);
 
   const signup = (e) => {
@@ -165,26 +168,34 @@ function App() {
       </Modal>
       <div className="app__header">
         <img
+        className="app__header__image"
           src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
           alt="instagram logo"
         />
+        {user ? (
+          <Button onClick={() => auth.signOut()}>logout</Button>
+        ) : (
+          <div className="app__loginContainer">
+            <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
+            <Button onClick={() => setOpenModal(true)}>Sign Up</Button>
+          </div>
+        )}
       </div>
-      {user ? (
-        <Button onClick={() => auth.signOut()}>logout</Button>
-      ) : (
-        <div className="app__loginContainer">
-          <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-          <Button onClick={() => setOpenModal(true)}>Sign Up</Button>
-        </div>
-      )}
+
       <h1>Instagram Clone</h1>
       {posts.map((post) => (
         <Post
           key={post.id}
           username={post.post.username}
           caption={post.post.caption}
+          imageUrl={post.post.imageUrl}
         />
       ))}
+      {user?.displayName ? (
+        <ImageUpload username={user.displayName} />
+      ) : (
+        <h3>Sorry you need to login to upload</h3>
+      )}
     </div>
   );
 }
