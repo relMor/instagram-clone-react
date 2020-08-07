@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "./App.css";
 import Post from "./components/Post/Post";
+import { db } from "./firebase";
 
 function App() {
-  const [posts, setPosts] = useState([
-    { username: "Aman", caption: "Nothing much!" },
-    { username: "Max", caption: "Whatsupp?" },
-    { username: "Solo", caption: "Noice!!!" },
-  ]);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    db.collection("posts").onSnapshot((snapshot) => {
+      setPosts(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          post: doc.data(),
+        }))
+      );
+    });
+  }, []);
 
   return (
     <div className="app">
@@ -22,9 +30,9 @@ function App() {
       <h1>Instagram Clone</h1>
       {posts.map((post) => (
         <Post
-          key={post.username}
-          username={post.username}
-          caption={post.caption}
+          key={post.id}
+          username={post.post.username}
+          caption={post.post.caption}
         />
       ))}
     </div>
