@@ -80,6 +80,14 @@ function App() {
         return authUser.user.updateProfile({ displayName: username });
       })
       .catch((err) => alert(err));
+
+    setOpenModal(false);
+  };
+
+  const signin = (e) => {
+    e.preventDefault();
+    auth.signInWithEmailAndPassword(email, password).catch((err) => alert(err));
+    setOpenSignIn(false);
   };
 
   return (
@@ -117,7 +125,39 @@ function App() {
                 />
               </div>
               <Button type="submit" onClick={signup}>
-                SUBMIT
+                Sign Up
+              </Button>
+            </center>
+          </form>
+        </div>
+      </Modal>
+      <Modal open={openSignIn} onClose={() => setOpenSignIn(false)}>
+        <div style={modalStyle} className={classes.paper}>
+          <form className="app__signup">
+            <center>
+              <img
+                src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+                alt="instagram logo"
+              />
+              <div className="app__textfield">
+                <TextField
+                  id="standard-basic"
+                  label="email"
+                  variant="standard"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField
+                  id="standard-basic"
+                  label="password"
+                  variant="standard"
+                  value={password}
+                  type="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" onClick={signin}>
+                Sign In
               </Button>
             </center>
           </form>
@@ -133,8 +173,8 @@ function App() {
         <Button onClick={() => auth.signOut()}>logout</Button>
       ) : (
         <div className="app__loginContainer">
-          <Button onClick={() => auth.signOut()}>Sign In</Button>
-          <Button onClick={signup}>Sign Up</Button>
+          <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
+          <Button onClick={() => setOpenModal(true)}>Sign Up</Button>
         </div>
       )}
       <h1>Instagram Clone</h1>
