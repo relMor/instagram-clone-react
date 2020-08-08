@@ -4,9 +4,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import TextField from "@material-ui/core/TextField";
 import { Button } from "@material-ui/core";
+import InstagramEmbed from "react-instagram-embed";
 
 import "./App.css";
-import Post from "./components/Post/Post";
+import Post from "./Post";
 import { db, auth } from "./firebase";
 import ImageUpload from "./ImageUpload";
 
@@ -168,7 +169,7 @@ function App() {
       </Modal>
       <div className="app__header">
         <img
-        className="app__header__image"
+          className="app__header__image"
           src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
           alt="instagram logo"
         />
@@ -181,16 +182,34 @@ function App() {
           </div>
         )}
       </div>
-
-      <h1>Instagram Clone</h1>
-      {posts.map((post) => (
-        <Post
-          key={post.id}
-          username={post.post.username}
-          caption={post.post.caption}
-          imageUrl={post.post.imageUrl}
-        />
-      ))}
+      <div className="app__posts">
+        <div className="app__postsLeft">
+          {posts.map(({ id, post }) => (
+            <Post
+              key={id}
+              postId={id}
+              username={post.username}
+              caption={post.caption}
+              imageUrl={post.imageUrl}
+              user={user}
+            />
+          ))}
+        </div>
+        <div className="app__postsRight">
+          <InstagramEmbed
+            url="https://instagr.am/p/Zw9o4/"
+            maxWidth={320}
+            hideCaption={false}
+            containerTagName="div"
+            protocol=""
+            injectScript
+            onLoading={() => {}}
+            onSuccess={() => {}}
+            onAfterRender={() => {}}
+            onFailure={() => {}}
+          />
+        </div>
+      </div>
       {user?.displayName ? (
         <ImageUpload username={user.displayName} />
       ) : (
