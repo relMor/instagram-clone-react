@@ -50,28 +50,30 @@ const Post = (props) => {
       </p>
       <div className={classes.posts_comments}>
         {comments.map((comment) => (
-          <p>
+          <p key={Math.random()}>
             <strong>{comment.username}</strong> {comment.text}
           </p>
         ))}
       </div>
-      <form className={classes.comment_box}>
-        <input
-          className={classes.post_input}
-          type="text"
-          placeholder="Add a comment..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <button
-          disabled={!comment}
-          className={classes.post_button}
-          type="submit"
-          onClick={postComment}
-        >
-          Post
-        </button>
-      </form>
+      {props.user && (
+        <form className={classes.comment_box}>
+          <input
+            className={classes.post_input}
+            type="text"
+            placeholder="Add a comment..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <button
+            disabled={!comment}
+            className={classes.post_button}
+            type="submit"
+            onClick={postComment}
+          >
+            Post
+          </button>
+        </form>
+      )}
     </div>
   );
 };
